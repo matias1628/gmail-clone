@@ -1,0 +1,27 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+/* TODO: togli colori specifici */
+
+:root {
+	--email-bgcolor: white;
+	--seen-email-bgcolor: #f2f6fc;
+	--page-bgcolor: #f6f8fc;
+	--search-bar-bgcolor: #eaf1fb;
+	--write-email-btn-bgcolor: #c2e7ff;
+	--current-section-bgcolor: #d3e3fd;
+	--quick-actions-icons-color: #5f6368;
+}
+
+[data-theme='dark'] {
+	--email-bgcolor: #2c2c2c;
+	--seen-email-bgcolor: #161616;
+	--page-bgcolor: #111111;
+	--search-bar-bgcolor: #474747;
+	--write-email-btn-bgcolor: #ffffff;
+	--current-section-bgcolor: #595959;
+	--quick-actions-icons-color: #e0e0e0;
+}
