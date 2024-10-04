@@ -14,10 +14,11 @@
 	}
 
 	.logo-section {
+		grid-area: logo-section;
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		gap: 10px;
+		gap: 8px;
+		margin-left: 10px;
 	}
 
 	.menu-anchor {

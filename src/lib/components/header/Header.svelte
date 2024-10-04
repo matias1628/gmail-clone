@@ -14,8 +14,10 @@
 
 <style>
 	header {
-		display: flex;
-		gap: 100px;
+		display: grid;
+		grid-template-columns: 250px 1fr 150px 50px;
+		grid-template-areas: 'logo-section searchbar quick-actions user-avatar';
 		align-items: center;
+		grid-area: header;
 	}
 </style>

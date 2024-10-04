@@ -2,6 +2,12 @@
 *::before,
 *::after {
 	box-sizing: border-box;
+	font-family: 'Roboto', sans-serif;
+}
+
+body {
+	background-color: var(--page-bgcolor);
+	margin: 0;
 }
 
 /* TODO: togli colori specifici */

@@ -4,6 +4,8 @@
 
 <style>
 	a {
+		grid-area: user-avatar;
+		justify-self: center;
 		display: flex;
 		justify-content: center;
 		align-items: center;

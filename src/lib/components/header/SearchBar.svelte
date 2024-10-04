@@ -20,8 +20,10 @@
 	}
 
 	.search-bar-container {
+		grid-area: searchbar;
 		display: flex;
-		width: fit-content;
+		width: 90%;
+		max-width: 720px;
 		padding: 0.4rem 0.6rem;
 		border-radius: 800px;
 		background-color: var(--search-bar-bgcolor);

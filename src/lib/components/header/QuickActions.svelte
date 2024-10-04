@@ -17,10 +17,12 @@
 	}
 
 	.quick-actions-container {
+		grid-area: quick-actions;
+		align-self: center;
 		display: flex;
 		justify-content: space-between;
 		width: fit-content;
-		gap: 10px;
+		gap: 8px;
 	}
 
 	a {
@@ -28,10 +30,9 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		padding: 0.4rem;
 		border-radius: 50%;
-		height: 26px;
-		width: 26px;
+		height: 40px;
+		width: 40px;
 	}
 
 	a:hover {
