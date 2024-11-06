@@ -1,16 +1,17 @@
 <script>
 	export let icon;
 	export let title;
-	export let count = 1200;
+	export let category;
+	export let count = 0;
 </script>
 
-<div class="nav-link-container">
+<a href={`/${category}`} class="nav-link-container">
 	<span class="material-symbols-outlined link-icon">{icon}</span>
 	<span class="link-title">{title}</span>
 	{#if count > 0}
 		<span class="link-count">{count}</span>
 	{/if}
-</div>
+</a>
 
 <style>
 	.nav-link-container {
@@ -20,6 +21,7 @@
 		border-top-right-radius: 40px;
 		border-bottom-right-radius: 40px;
 		cursor: pointer;
+		text-decoration: none;
 	}
 
 	.nav-link-container:hover {

@@ -1,5 +1,9 @@
+<script>
+	import QuickActionIcon from './QuickActionIcon.svelte';
+</script>
+
 <div class="quick-actions-container">
-	<a href="#">
+	<!-- <a href="#">
 		<span class="material-symbols-outlined"> help </span>
 	</a>
 	<a href="#">
@@ -7,7 +11,10 @@
 	</a>
 	<a href="#">
 		<span class="material-symbols-outlined"> apps </span>
-	</a>
+	</a> -->
+	<QuickActionIcon icon={'help'} tooltipText={'assistenza'} />
+	<QuickActionIcon icon={'settings'} tooltipText={'impostazioni'} />
+	<QuickActionIcon icon={'apps'} tooltipText={'applicazioni'} />
 </div>
 
 <style>
@@ -25,7 +32,7 @@
 		gap: 8px;
 	}
 
-	a {
+	/* a {
 		text-decoration: none;
 		display: flex;
 		justify-content: center;

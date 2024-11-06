@@ -2,7 +2,7 @@
 	<a href="#" class="menu-anchor">
 		<span class="material-symbols-outlined"> menu </span>
 	</a>
-	<a href="#" class="logo-anchor">
+	<a href="/" class="logo-anchor">
 		<img src="/gmail-logo.png" alt="Logo" class="logo" />
 	</a>
 </div>

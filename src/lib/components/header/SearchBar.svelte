@@ -1,12 +1,18 @@
 <script>
+	import { searchQuery } from '$lib/stores/searchStore.js';
+
+	let inputText = '';
 	let inputPlaceholder = 'Cerca nella posta';
+
+	// Update the store whenever the input changes
+	$: searchQuery.set(inputText);
 </script>
 
 <div class="search-bar-container">
 	<a href="#" class="search-button">
 		<span class="material-symbols-outlined"> search </span>
 	</a>
-	<input type="text" class="search-input" placeholder={inputPlaceholder} />
+	<input type="text" class="search-input" placeholder={inputPlaceholder} bind:value={inputText} />
 	<a href="#" class="filter-options-button">
 		<span class="material-symbols-outlined"> tune </span>
 	</a>

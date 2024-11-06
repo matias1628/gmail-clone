@@ -1,22 +1,33 @@
 <script>
 	import NavLink from './NavLink.svelte';
+	import { createEventDispatcher } from 'svelte';
+	import emailStore from '$lib/stores/emailStore.js';
 
 	const links = [
-		{ id: 1, icon: 'inbox', title: 'Posta in arrivo', count: 1200 },
-		{ id: 2, icon: 'star', title: 'Speciali' },
-		{ id: 3, icon: 'schedule', title: 'Posticipati' },
-		{ id: 4, icon: 'send', title: 'Inviati' },
-		{ id: 5, icon: 'draft', title: 'Bozze' },
-		{ id: 6, icon: 'keyboard_arrow_down', title: 'Altro' }
+		{ id: 1, icon: 'inbox', title: 'Posta in arrivo', category: 'inbox' },
+		{ id: 2, icon: 'star', title: 'Speciali', category: 'favourites' },
+		{ id: 3, icon: 'schedule', title: 'Posticipati', category: 'postponed' },
+		{ id: 4, icon: 'send', title: 'Inviati', category: 'sent' },
+		{ id: 5, icon: 'draft', title: 'Bozze', category: 'drafts' }
+		// { id: 6, icon: 'keyboard_arrow_down', title: 'Altro' }
 	];
 
-	let activeLink = links[0];
-	// FAI CON LO STORE !!!!!
-	function setActiveLink(link) {}
+	let emailData;
+
+	emailStore.subscribe((value) => {
+		emailData = value;
+	});
+
+	// handle write email button click
+	const dispatch = createEventDispatcher();
+
+	function handleWriteEmailClick() {
+		dispatch('openForm');
+	}
 </script>
 
 <div class="nav-container">
-	<button class="write-email-btn">
+	<button class="write-email-btn" on:click={handleWriteEmailClick}>
 		<span class="material-symbols-outlined"> edit </span>
 		<p>Scrivi</p>
 	</button>
@@ -26,8 +37,8 @@
 				<NavLink
 					icon={link.icon}
 					title={link.title}
-					isActive={link === activeLink}
-					on:click={() => setActiveLink(link)}
+					category={link.category}
+					count={emailData[link.category] ? emailData[link.category].length : 0}
 				/>
 			{/each}
 		</ul>

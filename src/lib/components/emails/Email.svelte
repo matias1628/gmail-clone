@@ -1,17 +1,19 @@
 <script>
-	export let email = {
-		sender: 'Lorem',
-		subject: 'Lorem ipsum dolor',
-		date: new Date(),
-		body: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde similique labore consequatur est vero! Voluptates assumenda sit amet error cumque! Provident, tempora enim ducimus magni odit veritatis accusamus voluptatem voluptatibus?'
-	};
+	import { createEventDispatcher } from 'svelte';
+
+	export let email;
+	export let isDraggable = false;
 
 	let isHovered = false;
 	let seen = false;
 	let checkboxIsHovered = false;
+	let date;
 
 	function formatDate(date) {
-		// Array of month names for easy lookup
+		if (!(date instanceof Date)) {
+			date = new Date(date); // Ensure it's a Date object
+		}
+
 		const monthNames = [
 			'jan',
 			'feb',
@@ -26,22 +28,41 @@
 			'nov',
 			'dec'
 		];
-
-		// Extract day and month from the given date
 		const day = date.getDate();
-		const month = monthNames[date.getMonth()]; // getMonth returns 0-based index
+		const month = monthNames[date.getMonth()];
 
-		// Return formatted string
 		return `${day} ${month}`;
 	}
 
-	$: email.date = formatDate(email.date);
+	$: date = formatDate(email.date);
+
+	const dispatch = createEventDispatcher();
+
+	function handleFavouriteToggle() {
+		dispatch('toggleFavourite', email.id);
+	}
+
+	function handleDeleteEmail() {
+		dispatch('deleteEmail', email.id);
+	}
 </script>
 
 <div
 	class="email-container"
 	class:seen
 	role="presentation"
+	draggable={isDraggable}
+	on:dragstart={(e) => {
+		dispatch('dragstart', email);
+	}}
+	on:dragover={(e) => {
+		e.preventDefault();
+		dispatch('dragover', email);
+	}}
+	on:drop={(e) => {
+		e.preventDefault();
+		dispatch('drop', email);
+	}}
 	on:mouseenter={() => (isHovered = true)}
 	on:mouseleave={() => (isHovered = false)}
 >
@@ -58,9 +79,19 @@
 				id=""
 				class="select-email-checkbox"
 				on:mouseenter={() => (checkboxIsHovered = true)}
+				on:click|stopPropagation
 			/>
 		</div>
-		<span class="material-symbols-outlined favourite-icon"> star </span>
+		<!-- metti in un div -->
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		<span
+			class="material-symbols-outlined favourite-icon"
+			class:fill-icon={email.favourite}
+			on:click|stopPropagation={handleFavouriteToggle}
+		>
+			star
+		</span>
 		<p class="sender">{email.sender}</p>
 	</div>
 	<div class="email-mid-section">
@@ -73,7 +104,7 @@
 				<button class="email-action-button" aria-label="Archive email">
 					<span class="material-symbols-outlined"> archive </span>
 				</button>
-				<button class="email-action-button" aria-label="Delete email">
+				<button class="email-action-button" aria-label="Delete email" on:click={handleDeleteEmail}>
 					<span class="material-symbols-outlined"> delete </span>
 				</button>
 				<button class="email-action-button" aria-label="Mark email as unread">
@@ -84,7 +115,7 @@
 				</button>
 			</div>
 		{:else}
-			<p class="date">{email.date}</p>
+			<p class="date">{date}</p>
 		{/if}
 	</div>
 </div>
@@ -144,6 +175,11 @@
 	}
 
 	.favourite-icon:hover {
+		font-variation-settings: 'FILL' 1;
+		color: rgb(235, 193, 8);
+	}
+
+	.fill-icon {
 		font-variation-settings: 'FILL' 1;
 		color: rgb(235, 193, 8);
 	}
