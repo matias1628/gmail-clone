@@ -1,3 +1,4 @@
+// src/lib/stores/emailStore.js
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
@@ -10,21 +11,21 @@ const defaultEmails = {
 	postponed: []
 };
 
+// Check if there's existing data in localStorage
 const storedEmails =
 	browser && localStorage.getItem('emailData')
 		? JSON.parse(localStorage.getItem('emailData'))
 		: defaultEmails;
 
+console.log('Initializing emailStore with data:', storedEmails);
+
 const emailStore = writable(storedEmails);
 
+// Subscribe to the store to save changes to localStorage
 emailStore.subscribe((value) => {
 	if (browser) {
-		// Check if inbox is empty before updating localStorage
-		if (!localStorage.getItem('emailData') || value.inbox.length === 0) {
-			localStorage.setItem('emailData', JSON.stringify(defaultEmails));
-		} else {
-			localStorage.setItem('emailData', JSON.stringify(value));
-		}
+		console.log('Updating localStorage with:', value);
+		localStorage.setItem('emailData', JSON.stringify(value));
 	}
 });
 

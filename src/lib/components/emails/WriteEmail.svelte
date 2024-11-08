@@ -2,12 +2,24 @@
 	import { createEventDispatcher } from 'svelte';
 	import { createEmail, addEmail, saveDraft } from '$lib/stores/emailActions.js';
 	import { draftData } from '$lib/stores/draftWrite.js';
+	import { onMount } from 'svelte';
 
-	$: receiver = $draftData?.receiver || '';
-	$: subject = $draftData?.subject || '';
-	$: body = $draftData?.body || '';
+	let receiver = '';
+	let subject = '';
+	let body = '';
 	let sent = false;
 	let attachedFiles = []; // Array to store attached files
+	let draftId = null;
+
+	onMount(() => {
+		if ($draftData?.id) {
+			draftId = $draftData.id;
+			receiver = $draftData.receiver;
+			subject = $draftData.subject;
+			body = $draftData.body;
+			attachedFiles = $draftData.attachments || [];
+		}
+	});
 
 	let fileInput;
 
@@ -21,20 +33,20 @@
 		attachedFiles = [];
 	}
 
-	function handleCloseForm() {
+	async function handleCloseForm(event) {
+		event.preventDefault();
 		if (!sent && (receiver || subject || body || attachedFiles.length > 0)) {
-			saveDraft(receiver, subject, body, attachedFiles);
+			await saveDraft(receiver, subject, body, attachedFiles, draftId);
 		}
 
 		resetForm();
 		dispatch('closeForm');
-		// NON DEVO POTER SALVARE SE HO APERTO UNA DRAFT
 	}
 
-	function handleSubmit(event) {
+	async function handleSubmit(event) {
 		event.preventDefault();
 
-		const newEmail = createEmail(receiver, subject, body, attachedFiles);
+		const newEmail = await createEmail(receiver, subject, body, attachedFiles);
 		addEmail(newEmail);
 
 		sent = true;
@@ -57,6 +69,11 @@
 	function handleDragOver(event) {
 		event.preventDefault();
 	}
+
+	// Function to remove a file from the attachment list
+	function removeFile(fileName) {
+		attachedFiles = attachedFiles.filter((file) => file.name !== fileName);
+	}
 </script>
 
 <form on:submit={handleSubmit} on:drop={handleDrop} on:dragover={handleDragOver}>
@@ -69,7 +86,7 @@
 			<button class="window-action-button">
 				<span class="material-symbols-outlined"> open_in_full </span>
 			</button>
-			<button class="window-action-button" on:click={handleCloseForm}>
+			<button class="window-action-button" type="button" on:click={handleCloseForm}>
 				<span class="material-symbols-outlined"> close </span>
 			</button>
 		</div>
@@ -85,17 +102,27 @@
 				<p>Files attached:</p>
 				<ul>
 					{#each attachedFiles as file (file.name)}
-						<li>{file.name}</li>
+						<li>
+							{file.name}
+							<button
+								type="button"
+								on:click={() => removeFile(file.name)}
+								class="remove-file-button"
+							>
+								<span class="material-symbols-outlined close-attachment-icon">close</span>
+							</button>
+						</li>
 					{/each}
 				</ul>
 			{/if}
 		</div>
 
 		<div class="form-footer">
-			<button class="send-button">Invia</button>
+			<button class="send-button" type="submit">Invia</button>
 			<div class="email-actions">
 				<div class="action-container">
-					<!-- Trigger file input when this button is clicked -->
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<!-- svelte-ignore a11y-no-static-element-interactions -->
 					<span class="material-symbols-outlined action-icon" on:click={() => fileInput.click()}
 						>attach_file</span
 					>
@@ -250,6 +277,7 @@
 	.file-preview {
 		margin-top: 10px;
 		font-size: 0.875rem;
+		font-weight: 500;
 		color: #333;
 	}
 
@@ -260,5 +288,27 @@
 
 	.file-preview li {
 		margin: 5px 0;
+		display: flex;
+		align-items: center;
+	}
+
+	.remove-file-button {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: transparent;
+		border: none;
+		cursor: pointer;
+		color: #d32f2f;
+		margin-left: 10px;
+	}
+
+	.remove-file-button:hover {
+		color: #b71c1c;
+	}
+
+	.close-attachment-icon {
+		font-size: 1.3rem;
+		display: flex;
 	}
 </style>

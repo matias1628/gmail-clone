@@ -22,15 +22,15 @@
 	.popup {
 		position: absolute;
 		top: 100%;
-		left: 100%; /* Positions it to the right of the button */
-		transform: translateY(-50%); /* Centers it vertically relative to the button */
+		left: 100%;
+		transform: translateY(-50%);
 		background-color: white;
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 		border-radius: 8px;
 		padding: 8px;
 		display: flex;
 		flex-direction: column;
-		z-index: 10; /* Ensures it appears above other elements */
+		z-index: 10;
 		min-width: 200px;
 	}
 	button {

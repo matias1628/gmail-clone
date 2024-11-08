@@ -1,12 +1,14 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
+	import { selectedEmails } from '$lib/stores/selectedEmailsStore.js';
 
 	export let email;
 	export let isDraggable = false;
 
 	let isHovered = false;
+	let isChecked = false;
 	let seen = false;
-	let checkboxIsHovered = false;
+	let isCheckboxHovered = false;
 	let date;
 
 	function formatDate(date) {
@@ -35,6 +37,20 @@
 	}
 
 	$: date = formatDate(email.date);
+
+	$: selectedEmails.subscribe((selected) => {
+		isChecked = selected.includes(email.id);
+	});
+
+	function toggleSelection() {
+		selectedEmails.update((selected) => {
+			if (isChecked) {
+				return [...selected, email.id];
+			} else {
+				return selected.filter((id) => id != email.id);
+			}
+		});
+	}
 
 	const dispatch = createEventDispatcher();
 
@@ -70,29 +86,33 @@
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div
 			class="checkbox-container"
-			class:checkbox-hovered={checkboxIsHovered}
-			on:mouseleave={() => (checkboxIsHovered = false)}
+			class:checkbox-hovered={isCheckboxHovered}
+			on:mouseleave={() => (isCheckboxHovered = false)}
 		>
 			<input
 				type="checkbox"
 				name=""
 				id=""
 				class="select-email-checkbox"
-				on:mouseenter={() => (checkboxIsHovered = true)}
-				on:click|stopPropagation
+				checked={isChecked}
+				on:mouseenter={() => (isCheckboxHovered = true)}
+				on:click|stopPropagation={toggleSelection}
 			/>
 		</div>
-		<!-- metti in un div -->
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<!-- svelte-ignore a11y-no-static-element-interactions -->
-		<span
-			class="material-symbols-outlined favourite-icon"
-			class:fill-icon={email.favourite}
-			on:click|stopPropagation={handleFavouriteToggle}
-		>
-			star
-		</span>
-		<p class="sender">{email.sender}</p>
+		<div class="fav-icon-container">
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y-no-static-element-interactions -->
+			<span
+				class="material-symbols-outlined favourite-icon"
+				class:fill-icon={email.favourite}
+				on:click|stopPropagation={handleFavouriteToggle}
+			>
+				star
+			</span>
+		</div>
+		<div class="sender-container">
+			<p class="sender">{email.sender}</p>
+		</div>
 	</div>
 	<div class="email-mid-section">
 		<span class="subject">{email.subject}</span> -
@@ -104,7 +124,11 @@
 				<button class="email-action-button" aria-label="Archive email">
 					<span class="material-symbols-outlined"> archive </span>
 				</button>
-				<button class="email-action-button" aria-label="Delete email" on:click={handleDeleteEmail}>
+				<button
+					class="email-action-button"
+					aria-label="Delete email"
+					on:click|stopPropagation={handleDeleteEmail}
+				>
 					<span class="material-symbols-outlined"> delete </span>
 				</button>
 				<button class="email-action-button" aria-label="Mark email as unread">
@@ -123,7 +147,7 @@
 <style>
 	.email-container {
 		display: grid;
-		grid-template-columns: 200px 1fr auto;
+		grid-template-columns: 300px 1fr auto;
 		grid-template-areas: 'left mid right';
 		align-items: center;
 		column-gap: 20px;
@@ -147,6 +171,7 @@
 		grid-area: left;
 		display: flex;
 		align-items: center;
+		align-self: center;
 	}
 
 	.checkbox-container {
@@ -164,6 +189,13 @@
 
 	.select-email-checkbox {
 		cursor: pointer;
+	}
+
+	.fav-icon-container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
 	}
 
 	.favourite-icon {

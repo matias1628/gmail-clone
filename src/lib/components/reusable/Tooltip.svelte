@@ -1,6 +1,6 @@
 <script>
 	import { fade } from 'svelte/transition';
-	export let text; // Text that will appear in the tooltip
+	export let text;
 </script>
 
 <div class="tooltip" transition:fade>
@@ -10,7 +10,7 @@
 <style>
 	.tooltip {
 		position: absolute;
-		bottom: -30px; /* Position the tooltip below the icon */
+		bottom: -30px;
 		left: 50%;
 		transform: translateX(-50%);
 		background-color: #4e4e4e;
@@ -20,6 +20,5 @@
 		font-size: 0.8rem;
 		white-space: nowrap;
 		z-index: 1;
-		/* Opacity is handled by the fade transition */
 	}
 </style>

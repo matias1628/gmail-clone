@@ -5,14 +5,11 @@
 	import WriteEmail from '../lib/components/emails/WriteEmail.svelte';
 	import { showWriteEmail, draftData } from '$lib/stores/draftWrite.js';
 
-	function openWriteEmail(draft = null) {
+	function openWriteEmail() {
 		showWriteEmail.set(true);
-		console.log('Draft data set:', draftData); // Log to confirm draft data assignment
-		console.log('Show WriteEmail:', showWriteEmail); // Log to confirm showWriteEmail updates
 	}
 
 	function closeWriteEmail() {
-		console.log('Closing WriteEmail form');
 		draftData.set(null);
 		showWriteEmail.set(false);
 	}
@@ -24,7 +21,7 @@
 	<slot></slot>
 </div>
 {#if $showWriteEmail}
-	<WriteEmail {draftData} on:closeForm={closeWriteEmail} />
+	<WriteEmail on:closeForm={closeWriteEmail} />
 {/if}
 
 <style>

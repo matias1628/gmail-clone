@@ -1,37 +1,52 @@
 <script>
-	import Email from './Email.svelte';
-	import emailStore from '$lib/stores/emailStore.js';
-	import SortPopup from './SortPopup.svelte';
-	import { deleteEmail, toggleFavourite, updateEmailStore } from '$lib/stores/emailActions.js';
-	import { searchQuery } from '$lib/stores/searchStore.js';
-	import { showWriteEmail, draftData } from '$lib/stores/draftWrite.js';
+	// Svelte Imports
 	import { goto } from '$app/navigation';
 
+	// Component Imports
+	import Email from './Email.svelte';
+	import SortPopup from './SortPopup.svelte';
+
+	// Store Imports
+	import emailStore from '$lib/stores/emailStore.js';
+	import { selectedEmails } from '$lib/stores/selectedEmailsStore.js';
+	import { searchQuery } from '$lib/stores/searchStore.js';
+	import { showWriteEmail, draftData } from '$lib/stores/draftWrite.js';
+
+	// Action Imports
+	import { deleteEmail, toggleFavourite, updateEmailStore } from '$lib/stores/emailActions.js';
+
+	// Props
 	export let category;
 
+	// Local State
 	let emails = [];
 	let search;
 	let draggedEmail = null;
 	let showPopup = false;
 	let sortOrder = 'newest';
+	let selectAllChecked = false;
 
+	// Reactive Store Subscriptions
 	$: {
-		// This ensures you dynamically update `emails` when `category` changes
+		// Subscribe to email store updates based on category
 		emailStore.subscribe((store) => {
 			emails = store[category] || [];
 		});
 
+		// Subscribe to search query updates
 		searchQuery.subscribe((value) => {
 			search = value.toLowerCase();
 		});
 	}
 
+	// Sort emails based on `sortOrder` - 'newest' or 'oldest'
 	$: sortedEmails = [...emails].sort((a, b) => {
 		return sortOrder === 'newest'
 			? new Date(b.date) - new Date(a.date)
 			: new Date(a.date) - new Date(b.date);
 	});
 
+	// Filter emails based on search query
 	$: filteredEmails = sortedEmails.filter(
 		(email) =>
 			(email.subject?.toLowerCase() || '').includes(search) ||
@@ -40,83 +55,103 @@
 			(email.sender?.toLowerCase() || '').includes(search)
 	);
 
+	// Sort Handling
 	function handleSort(event) {
 		sortOrder = event.detail.order;
 		showPopup = false;
 	}
 
+	// Favourite Toggle Handling
 	function handleFavouriteToggle(event) {
 		const emailId = event.detail;
 		toggleFavourite(emailId);
 	}
 
+	// Delete Email Handling
 	function handleDeleteEmail(event) {
 		const emailId = event.detail;
 		deleteEmail(emailId, category);
+		// SE CANCELLO UNA MAIL IN INBOX DEVE SPARIRE ANCHE DAI PREFERITI E VICEVERSA
 	}
 
-	// Drag-and-drop handlers
+	// Drag and Drop Handling
 	function handleDragStart(email) {
-		console.log('drag start');
-		draggedEmail = email; // set the dragged email
+		draggedEmail = email;
 	}
 
 	function handleDragOver(event) {
-		// Prevent default to allow drop
 		event.preventDefault();
-		console.log('drag over');
 	}
 
 	function handleDrop(targetEmail) {
-		// Ensure only dragging in favourites category
 		if (category === 'favourites' && draggedEmail) {
 			const updatedOrder = reorderEmails(emails, draggedEmail, targetEmail);
 			updateEmailStore({ favourites: updatedOrder });
 		}
-		draggedEmail = null; // Reset dragged email
+		draggedEmail = null;
 		console.log('drag drop');
 	}
 
-	// Reorder helper function
+	// Reorder Emails Function for Drag-and-Drop
 	function reorderEmails(list, dragged, target) {
 		const result = [...list];
 		const draggedIndex = result.findIndex((email) => email.id === dragged.id);
 		const targetIndex = result.findIndex((email) => email.id === target.id);
-
-		// Remove dragged item from current position
 		result.splice(draggedIndex, 1);
-		// Insert dragged item at new position
 		result.splice(targetIndex, 0, dragged);
 		return result;
 	}
 
+	// Handle Email Click - navigate or open draft editor
 	function handleEmailClick(email) {
 		if (email.draft) {
 			console.log('Draft clicked, updating store with draft data:', email);
-			draftData.set(email); // Set the draft data
-			showWriteEmail.set(true); // Show the WriteEmail component
+			draftData.set(email);
+			showWriteEmail.set(true);
 		} else {
 			goto(`/inbox/${email.id}`);
 		}
+	}
+
+	// Toggle select all emails
+	function toggleSelectAll() {
+		selectAllChecked = !selectAllChecked;
+
+		if (selectAllChecked) {
+			// Add all email IDs to selectedEmails store
+			selectedEmails.set(emails.map((email) => email.id));
+		} else {
+			// Clear selectedEmails store
+			selectedEmails.set([]);
+		}
+	}
+
+	function deleteSelectedEmails() {
+		selectedEmails.update((ids) => {
+			// Delete each email by id
+			ids.forEach((id) => deleteEmail(id, category));
+			return [];
+		});
 	}
 </script>
 
 <section>
 	<div class="email-section-header">
-		<!-- Checkbox for selecting emails -->
-		<input type="checkbox" id="select-all-emails" aria-label="Select all emails" />
+		<div class="select-all">
+			<input
+				type="checkbox"
+				id="select-all-emails"
+				aria-label="Select all emails"
+				bind:checked={selectAllChecked}
+				on:click={toggleSelectAll}
+			/>
+			<span>▾</span>
+		</div>
 
-		<!-- Dropdown button -->
-		<button aria-label="Open dropdown" class="icon-button">
-			<span class="material-symbols-outlined">arrow_drop_down</span>
-		</button>
-
-		<!-- Refresh button -->
 		<button aria-label="Refresh emails" class="icon-button">
 			<span class="material-symbols-outlined">refresh</span>
 		</button>
 
-		<!-- More options button -->
 		<div class="button-wrap">
 			<button
 				aria-label="More options"
@@ -129,6 +164,14 @@
 				<SortPopup on:sort={handleSort} />
 			{/if}
 		</div>
+
+		<button
+			class="icon-button"
+			on:click={deleteSelectedEmails}
+			disabled={$selectedEmails.length === 0}
+		>
+			<span class="material-symbols-outlined"> delete </span>
+		</button>
 	</div>
 	<div class="email-section-body">
 		{#if search.length == 0}
@@ -151,7 +194,7 @@
 					</a>
 				{/each}
 			{:else}
-				<p>No emails in your inbox</p>
+				<p class="no-emails">No emails in your inbox</p>
 			{/if}
 		{:else if filteredEmails.length > 0}
 			{#each filteredEmails as email}
@@ -169,7 +212,7 @@
 				</a>
 			{/each}
 		{:else}
-			<p>No emails found matching your search</p>
+			<p class="no-emails">No emails found matching your search</p>
 		{/if}
 		<div class="email-section-footer">
 			<span>Termini · Privacy · Norme del programma</span>
@@ -195,6 +238,17 @@
 		display: flex;
 		background-color: white;
 		padding: 15px 20px;
+	}
+
+	.select-all {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		cursor: default;
+	}
+
+	.select-all input {
+		cursor: pointer;
 	}
 
 	.button-wrap {
@@ -268,5 +322,10 @@
 		-webkit-box-shadow:
 			inset 1px 1px 0px rgba(0, 0, 0, 0.1),
 			inset 0px -1px 0px rgba(0, 0, 0, 0.07);
+	}
+
+	.no-emails {
+		display: flex;
+		justify-content: center;
 	}
 </style>

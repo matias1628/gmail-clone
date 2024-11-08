@@ -9,7 +9,6 @@
 		{ id: 3, icon: 'schedule', title: 'Posticipati', category: 'postponed' },
 		{ id: 4, icon: 'send', title: 'Inviati', category: 'sent' },
 		{ id: 5, icon: 'draft', title: 'Bozze', category: 'drafts' }
-		// { id: 6, icon: 'keyboard_arrow_down', title: 'Altro' }
 	];
 
 	let emailData;

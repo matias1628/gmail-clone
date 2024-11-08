@@ -1,23 +1,34 @@
-import { read } from '$app/server';
 import emailStore from './emailStore';
 import { get } from 'svelte/store';
+
+async function readFileAsBase64(file) {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = () => resolve({ name: file.name, type: file.type, content: reader.result });
+		reader.onerror = (error) => reject(error);
+		reader.readAsDataURL(file);
+	});
+}
 
 export function updateEmailStore(updatedEmails) {
 	emailStore.update((emails) => ({ ...emails, ...updatedEmails }));
 }
 
-export function createEmail(receiver, subject = 'No Subject', body = '') {
+export async function createEmail(receiver, subject = 'No Subject', body = '', attachments = []) {
 	const currentDate = new Date().toISOString();
+	const base64Attachments = await Promise.all(attachments.map((file) => readFileAsBase64(file)));
+
 	return {
-		id: crypto.randomUUID(), // Generate unique ID for the email
+		id: crypto.randomUUID(),
 		sender: 'default Sender',
 		receiver,
 		subject,
 		body,
-		favourite: false, // Not a favorite by default
-		archived: false, // Not archived by default
-		draft: false, // Not a draft (unless explicitly set)
-		sent: false, // Not sent yet (used for drafts)
+		attachments: base64Attachments,
+		favourite: false,
+		archived: false,
+		draft: false,
+		sent: false,
 		date: currentDate
 	};
 }
@@ -25,7 +36,6 @@ export function createEmail(receiver, subject = 'No Subject', body = '') {
 export function addEmail(email) {
 	const emails = get(emailStore);
 
-	// Add the email object directly to the inbox
 	emails.inbox.push(email);
 
 	updateEmailStore({ inbox: emails.inbox });
@@ -60,16 +70,43 @@ export function toggleFavourite(emailId) {
 	}
 }
 
-export function saveDraft(receiver, subject, body) {
+export async function saveDraft(receiver, subject, body, attachments, existingDraftId = null) {
 	const emails = get(emailStore);
 
-	// Use createEmail and mark as draft
-	const draftEmail = createEmail(receiver, subject, body);
-	draftEmail.draft = true; // Mark as a draft email
+	// Convert attachments to Base64 if they are new files
+	const base64Attachments = await Promise.all(
+		attachments.map(async (file) => {
+			// If it's already in base64, keep it as is; otherwise, convert it
+			if (file.content && file.name && file.type) {
+				return file;
+			} else {
+				return await readFileAsBase64(file);
+			}
+		})
+	);
 
-	// Add to drafts
+	// If an existing draft ID is provided, update that draft
+	if (existingDraftId) {
+		const draftIndex = emails.drafts.findIndex((draft) => draft.id === existingDraftId);
+		if (draftIndex !== -1) {
+			// Update the draft in place
+			emails.drafts[draftIndex] = {
+				...emails.drafts[draftIndex],
+				receiver,
+				subject,
+				body,
+				attachments: base64Attachments,
+				date: new Date().toISOString() // update date to reflect last edit time
+			};
+			updateEmailStore({ drafts: emails.drafts });
+			return;
+		}
+	}
+
+	// If no existing draft, create a new one
+	const draftEmail = await createEmail(receiver, subject, body, attachments);
+	draftEmail.draft = true;
 	emails.drafts.push(draftEmail);
-
 	updateEmailStore({ drafts: emails.drafts });
 }
 
