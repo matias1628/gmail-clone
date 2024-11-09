@@ -6,9 +6,9 @@
 	const links = [
 		{ id: 1, icon: 'inbox', title: 'Posta in arrivo', category: 'inbox' },
 		{ id: 2, icon: 'star', title: 'Speciali', category: 'favourites' },
-		{ id: 3, icon: 'schedule', title: 'Posticipati', category: 'postponed' },
-		{ id: 4, icon: 'send', title: 'Inviati', category: 'sent' },
-		{ id: 5, icon: 'draft', title: 'Bozze', category: 'drafts' }
+		// { id: 3, icon: 'schedule', title: 'Posticipati', category: 'postponed' },
+		// { id: 4, icon: 'send', title: 'Inviati', category: 'sent' },
+		{ id: 3, icon: 'draft', title: 'Bozze', category: 'drafts' }
 	];
 
 	let emailData;
@@ -28,7 +28,7 @@
 <div class="nav-container">
 	<button class="write-email-btn" on:click={handleWriteEmailClick}>
 		<span class="material-symbols-outlined"> edit </span>
-		<p>Scrivi</p>
+		<p class="write-text">Scrivi</p>
 	</button>
 	<nav>
 		<ul>

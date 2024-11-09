@@ -35,5 +35,41 @@
 		max-height: 100vh;
 		position: relative;
 		padding-bottom: 20px;
+		transform: scale(1); /* Initial scale */
+		transform-origin: top left;
+	}
+
+	@media (max-width: 1200px) {
+		.main-container {
+			transform: scale(0.9); /* Scale down proportionally */
+		}
+	}
+
+	@media (max-width: 992px) {
+		.main-container {
+			transform: scale(0.8);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.main-container {
+			transform: scale(0.7);
+		}
+	}
+
+	@media (max-width: 576px) {
+		.main-container {
+			transform: scale(0.6);
+		}
+	}
+
+	/* Ensure the layout still centers in the viewport when scaled */
+	body {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 100vh;
+		margin: 0;
+		overflow: hidden; /* Optional: hides any overflow due to scaling */
 	}
 </style>

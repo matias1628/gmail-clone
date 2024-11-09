@@ -22,7 +22,7 @@
 				const getRandomUser = () => users[Math.floor(Math.random() * users.length)];
 
 				const defaultEmails = {
-					inbox: Array.from({ length: 5 }, () => {
+					inbox: Array.from({ length: 16 }, () => {
 						const user = getRandomUser();
 						return {
 							id: crypto.randomUUID(),

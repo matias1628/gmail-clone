@@ -227,6 +227,7 @@
 		grid-area: content;
 		display: flex;
 		flex-direction: column;
+		max-height: 90vh;
 	}
 
 	.email-external-container {
