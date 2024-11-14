@@ -1,3 +1,8 @@
+<!-- This component displays a tooltip with customizable text,
+ 	 appearing near the associated element
+	 Exports:
+	 - text: the text that will be shown-->
+
 <script>
 	import { fade } from 'svelte/transition';
 	export let text;

@@ -1,10 +1,15 @@
 <script>
-	import UserAvatar from '../header/UserAvatar.svelte';
+	// This component's porpouse is to display an email's details
+	// Exports:
+	// - email: the email to display
+
+	import UserAvatar from '../reusable/UserAvatar.svelte';
 
 	export let email;
 
+	// takes an iso string and returns a string ready to be displayed in the email page
 	function formatDate(isoString) {
-		const date = new Date(isoString); // Parse the ISO string into a Date object
+		const date = new Date(isoString);
 
 		const daysOfWeek = ['dom', 'lun', 'mar', 'mer', 'gio', 'ven', 'sab'];
 		const monthsOfYear = [

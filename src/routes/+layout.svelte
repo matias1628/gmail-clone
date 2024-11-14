@@ -35,13 +35,13 @@
 		max-height: 100vh;
 		position: relative;
 		padding-bottom: 20px;
-		transform: scale(1); /* Initial scale */
+		transform: scale(1);
 		transform-origin: top left;
 	}
 
 	@media (max-width: 1200px) {
 		.main-container {
-			transform: scale(0.9); /* Scale down proportionally */
+			transform: scale(0.9);
 		}
 	}
 
@@ -61,15 +61,5 @@
 		.main-container {
 			transform: scale(0.6);
 		}
-	}
-
-	/* Ensure the layout still centers in the viewport when scaled */
-	body {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		min-height: 100vh;
-		margin: 0;
-		overflow: hidden; /* Optional: hides any overflow due to scaling */
 	}
 </style>

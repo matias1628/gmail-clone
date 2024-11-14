@@ -1,6 +1,7 @@
 import emailStore from './emailStore';
 import { get } from 'svelte/store';
 
+// Helper function to read a file as base64 encoded data
 async function readFileAsBase64(file) {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
@@ -10,10 +11,12 @@ async function readFileAsBase64(file) {
 	});
 }
 
+// Updates the email store with the provided changes
 export function updateEmailStore(updatedEmails) {
 	emailStore.update((emails) => ({ ...emails, ...updatedEmails }));
 }
 
+// Creates a new email object with default properties
 export async function createEmail(receiver, subject = 'No Subject', body = '', attachments = []) {
 	const currentDate = new Date().toISOString();
 	const base64Attachments = await Promise.all(attachments.map((file) => readFileAsBase64(file)));
@@ -26,13 +29,12 @@ export async function createEmail(receiver, subject = 'No Subject', body = '', a
 		body,
 		attachments: base64Attachments,
 		favourite: false,
-		archived: false,
 		draft: false,
-		sent: false,
 		date: currentDate
 	};
 }
 
+// Adds an email object to the inbox category in the email store
 export function addEmail(email) {
 	const emails = get(emailStore);
 
@@ -41,12 +43,14 @@ export function addEmail(email) {
 	updateEmailStore({ inbox: emails.inbox });
 }
 
+// Deletes an email from a specific category based on its ID
 export function deleteEmail(emailId, category) {
 	const emails = get(emailStore);
 	const updatedCategory = emails[category].filter((email) => email.id != emailId);
 	updateEmailStore({ [category]: updatedCategory });
 }
 
+// Toggles the read status of an email identified by its ID
 export function toggleReadStatus(emailId) {
 	const emails = get(emailStore);
 	const updatedInbox = emails.inbox.map((email) =>
@@ -55,6 +59,7 @@ export function toggleReadStatus(emailId) {
 	updateEmailStore({ inbox: updatedInbox });
 }
 
+// Toggles the favourite status of an email and updates favourites list
 export function toggleFavourite(emailId) {
 	const emails = get(emailStore);
 	const email = emails.inbox.find((email) => email.id === emailId);
@@ -70,13 +75,13 @@ export function toggleFavourite(emailId) {
 	}
 }
 
+// Saves a draft email, handling existing drafts and new ones
 export async function saveDraft(receiver, subject, body, attachments, existingDraftId = null) {
 	const emails = get(emailStore);
 
 	// Convert attachments to Base64 if they are new files
 	const base64Attachments = await Promise.all(
 		attachments.map(async (file) => {
-			// If it's already in base64, keep it as is; otherwise, convert it
 			if (file.content && file.name && file.type) {
 				return file;
 			} else {
@@ -110,13 +115,17 @@ export async function saveDraft(receiver, subject, body, attachments, existingDr
 	updateEmailStore({ drafts: emails.drafts });
 }
 
-export function archiveEmail(emailId) {
+// Marks an email as "seen" based on its ID
+export function markEmailAsSeen(emailId) {
 	const emails = get(emailStore);
-	const email = emails.inbox.find((email) => email.id === emailId);
-	if (email) {
-		email.archived = true;
-		emails.archived.push(email);
-		const updatedInbox = emails.inbox.filter((e) => e.id !== emailId);
-		updateEmailStore({ archived: emails.archived, inbox: updatedInbox });
+
+	const emailIndex = emails.inbox.findIndex((email) => email.id === emailId);
+	if (emailIndex !== -1) {
+		emails.inbox[emailIndex] = {
+			...emails.inbox[emailIndex],
+			seen: true
+		};
+
+		updateEmailStore({ inbox: emails.inbox });
 	}
 }

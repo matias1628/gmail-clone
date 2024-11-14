@@ -1,3 +1,10 @@
+<!-- This component represents a single link in the navigation menu 
+     Exports:
+	 - icon: the name of the displayed icon
+	 - title: the name of the link itself
+	 - category: the email category the link leads to
+	 - count: the number of items in the specific category -->
+
 <script>
 	export let icon;
 	export let title;

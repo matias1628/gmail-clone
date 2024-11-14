@@ -1,52 +1,54 @@
 <script>
-	// Svelte Imports
+	// This component renders a list of emails based on the selected category (e.g., inbox, favourites).
+	// It supports functionalities such as filtering, sorting, selecting multiple emails,
+	// and performing actions (e.g., delete, favourite) on individual or selected emails.
+	// Exports:
+	// - category: the section to be displayed
 	import { goto } from '$app/navigation';
-
-	// Component Imports
 	import Email from './Email.svelte';
 	import SortPopup from './SortPopup.svelte';
-
-	// Store Imports
 	import emailStore from '$lib/stores/emailStore.js';
 	import { selectedEmails } from '$lib/stores/selectedEmailsStore.js';
 	import { searchQuery } from '$lib/stores/searchStore.js';
 	import { showWriteEmail, draftData } from '$lib/stores/draftWrite.js';
+	import {
+		deleteEmail,
+		toggleFavourite,
+		updateEmailStore,
+		markEmailAsSeen
+	} from '$lib/stores/emailActions.js';
 
-	// Action Imports
-	import { deleteEmail, toggleFavourite, updateEmailStore } from '$lib/stores/emailActions.js';
-
-	// Props
 	export let category;
 
-	// Local State
-	let emails = [];
-	let search;
-	let draggedEmail = null;
-	let showPopup = false;
-	let sortOrder = 'newest';
-	let selectAllChecked = false;
+	let emails = []; // list of displayed emails
+	let search; // search query used to filter through emails
+	let draggedEmail = null; // keeps track of the email that is currently being dragged
+	let showSortPopup = false; // Controls visibility of the sorting popup
+	let sortOrder = 'newest'; // default sort order
+	let selectAllChecked = false; // Tracks if "Select All" checkbox is checked
 
-	// Reactive Store Subscriptions
+	// Subscribes to the email store and updates `emails` based on selected category
+	// Also keeps `search` query in sync with the search store
 	$: {
-		// Subscribe to email store updates based on category
 		emailStore.subscribe((store) => {
 			emails = store[category] || [];
 		});
 
-		// Subscribe to search query updates
 		searchQuery.subscribe((value) => {
 			search = value.toLowerCase();
 		});
 	}
 
-	// Sort emails based on `sortOrder` - 'newest' or 'oldest'
+	// Creates a sorted list of emails based on `sortOrder` (newest or oldest first)
+	// Re-calculates whenever `emails` or `sortOrder` change
 	$: sortedEmails = [...emails].sort((a, b) => {
 		return sortOrder === 'newest'
 			? new Date(b.date) - new Date(a.date)
 			: new Date(a.date) - new Date(b.date);
 	});
 
-	// Filter emails based on search query
+	// Filters the sorted emails based on the search query across multiple fields
+	// Updates whenever `sortedEmails` or `search` change
 	$: filteredEmails = sortedEmails.filter(
 		(email) =>
 			(email.subject?.toLowerCase() || '').includes(search) ||
@@ -55,26 +57,30 @@
 			(email.sender?.toLowerCase() || '').includes(search)
 	);
 
-	// Sort Handling
 	function handleSort(event) {
 		sortOrder = event.detail.order;
-		showPopup = false;
+		showSortPopup = false;
 	}
 
-	// Favourite Toggle Handling
 	function handleFavouriteToggle(event) {
 		const emailId = event.detail;
 		toggleFavourite(emailId);
 	}
 
-	// Delete Email Handling
 	function handleDeleteEmail(event) {
 		const emailId = event.detail;
 		deleteEmail(emailId, category);
-		// SE CANCELLO UNA MAIL IN INBOX DEVE SPARIRE ANCHE DAI PREFERITI E VICEVERSA
+
+		if (category == 'favourites') {
+			deleteEmail(emailId, 'inbox');
+		} else if (category == 'inbox') {
+			const isFavourite = $emailStore.favourites.some((e) => e.id === emailId);
+			if (isFavourite) {
+				deleteEmail(emailId, 'favourites');
+			}
+		}
 	}
 
-	// Drag and Drop Handling
 	function handleDragStart(email) {
 		draggedEmail = email;
 	}
@@ -102,33 +108,30 @@
 		return result;
 	}
 
-	// Handle Email Click - navigate or open draft editor
 	function handleEmailClick(email) {
+		// if email is a draft `draftData` store is updated so that `WriteEmail` component
+		// can read the data to display in the fields
 		if (email.draft) {
-			console.log('Draft clicked, updating store with draft data:', email);
 			draftData.set(email);
 			showWriteEmail.set(true);
 		} else {
+			markEmailAsSeen(email.id);
 			goto(`/inbox/${email.id}`);
 		}
 	}
 
-	// Toggle select all emails
 	function toggleSelectAll() {
 		selectAllChecked = !selectAllChecked;
 
 		if (selectAllChecked) {
-			// Add all email IDs to selectedEmails store
 			selectedEmails.set(emails.map((email) => email.id));
 		} else {
-			// Clear selectedEmails store
 			selectedEmails.set([]);
 		}
 	}
 
 	function deleteSelectedEmails() {
 		selectedEmails.update((ids) => {
-			// Delete each email by id
 			ids.forEach((id) => deleteEmail(id, category));
 			return [];
 		});
@@ -156,11 +159,11 @@
 			<button
 				aria-label="More options"
 				class="icon-button"
-				on:click={() => (showPopup = !showPopup)}
+				on:click={() => (showSortPopup = !showSortPopup)}
 			>
 				<span class="material-symbols-outlined">more_vert</span>
 			</button>
-			{#if showPopup}
+			{#if showSortPopup}
 				<SortPopup on:sort={handleSort} />
 			{/if}
 		</div>
@@ -177,6 +180,7 @@
 		{#if search.length == 0}
 			{#if sortedEmails.length > 0}
 				{#each sortedEmails as email}
+					<!-- svelte-ignore a11y-invalid-attribute -->
 					<a
 						href="#"
 						on:click|preventDefault={() => handleEmailClick(email)}
@@ -198,6 +202,7 @@
 			{/if}
 		{:else if filteredEmails.length > 0}
 			{#each filteredEmails as email}
+				<!-- svelte-ignore a11y-invalid-attribute -->
 				<a
 					href="#"
 					on:click|preventDefault={() => handleEmailClick(email)}

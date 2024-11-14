@@ -1,13 +1,14 @@
+<!-- This component displays the navigation menu that consents the user to navigate 
+ 	 through the various sections of the app (inobx, favourites and drafts) -->
+
 <script>
-	import NavLink from './NavLink.svelte';
 	import { createEventDispatcher } from 'svelte';
+	import NavLink from './NavLink.svelte';
 	import emailStore from '$lib/stores/emailStore.js';
 
 	const links = [
 		{ id: 1, icon: 'inbox', title: 'Posta in arrivo', category: 'inbox' },
 		{ id: 2, icon: 'star', title: 'Speciali', category: 'favourites' },
-		// { id: 3, icon: 'schedule', title: 'Posticipati', category: 'postponed' },
-		// { id: 4, icon: 'send', title: 'Inviati', category: 'sent' },
 		{ id: 3, icon: 'draft', title: 'Bozze', category: 'drafts' }
 	];
 
@@ -17,7 +18,6 @@
 		emailData = value;
 	});
 
-	// handle write email button click
 	const dispatch = createEventDispatcher();
 
 	function handleWriteEmailClick() {

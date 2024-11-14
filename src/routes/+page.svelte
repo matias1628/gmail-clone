@@ -1,18 +1,18 @@
 <script>
 	import { onMount } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
 	import emailStore from '$lib/stores/emailStore';
 	import EmailsSection from '../lib/components/emails/EmailsSection.svelte';
-	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();
-	let users = []; // Initialize users array
 
-	// Fetch users only on the client side using onMount
+	let users = [];
+
+	// adds some default emails to the page only if no pre-existing email data is found in the local storage
+	// email senders are fetched using an api
 	onMount(async () => {
-		console.log('Fetching users on client side...');
 		const response = await fetch('https://jsonplaceholder.typicode.com/users');
-		users = (await response.ok) ? await response.json() : [];
-		console.log('Fetched users:', users); // Check if users were fetched successfully
+		users = response.ok ? await response.json() : [];
 
 		if (users.length > 0) {
 			const existingData = localStorage.getItem('emailData');
@@ -39,11 +39,9 @@
 					postponed: []
 				};
 
-				console.log('Storing default emails in localStorage:', defaultEmails); // Debugging line
 				localStorage.setItem('emailData', JSON.stringify(defaultEmails));
 				emailStore.set(defaultEmails);
 			} else {
-				console.log('Using existing emails from localStorage:', parsedData); // Debugging line
 				emailStore.set(parsedData);
 			}
 		}

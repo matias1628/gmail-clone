@@ -1,3 +1,6 @@
+<!-- A simple reusable user logo -->
+
+<!-- svelte-ignore a11y-invalid-attribute -->
 <a href="#">
 	<img src="http://unsplash.it/35/35/?gravity=center" alt="Profile" />
 </a>

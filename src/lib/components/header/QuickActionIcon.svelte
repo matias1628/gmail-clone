@@ -1,10 +1,13 @@
 <script>
+	// This components represents a single action icon
+	// Exports:
+	// - icon: the icon's name
+	// - tooltipText: the text that is shown when hovering an icon
 	import Tooltip from '../reusable/Tooltip.svelte';
 
-	export let icon; // The Material icon name
-	export let tooltipText; // Text that appears in the tooltip
+	export let icon;
+	export let tooltipText;
 
-	// Control tooltip visibility
 	let isTooltipVisible = false;
 </script>
 

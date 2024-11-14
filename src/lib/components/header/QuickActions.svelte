@@ -1,4 +1,6 @@
 <script>
+	// This component contains the action icons that can be found on the top right of the page
+
 	import QuickActionIcon from './QuickActionIcon.svelte';
 </script>
 

@@ -1,4 +1,10 @@
 <script>
+	// This component represents an email item in a list within the UI.
+	// Exports:
+	// - email: The email object containing details such as sender, subject, body, etc.
+	// - isDraggable: A flag to control whether the email can be dragged. Allows external control
+	//   over drag functionality (only emails in the favourite section should be draggable).
+
 	import { createEventDispatcher } from 'svelte';
 	import { selectedEmails } from '$lib/stores/selectedEmailsStore.js';
 
@@ -7,13 +13,13 @@
 
 	let isHovered = false;
 	let isChecked = false;
-	let seen = false;
 	let isCheckboxHovered = false;
 	let date;
 
+	// takes a date and returns a string ready to be displayed in the email
 	function formatDate(date) {
 		if (!(date instanceof Date)) {
-			date = new Date(date); // Ensure it's a Date object
+			date = new Date(date);
 		}
 
 		const monthNames = [
@@ -36,12 +42,17 @@
 		return `${day} ${month}`;
 	}
 
+	// holds the value of the formatted email date
 	$: date = formatDate(email.date);
 
+	// Subscribes to the selectedEmails store to update the isChecked state for this email.
+	// The checkbox will be checked if this email's ID is present in the store's array of selected emails.
 	$: selectedEmails.subscribe((selected) => {
 		isChecked = selected.includes(email.id);
 	});
 
+	// Toggles the selection of this email by updating the selectedEmails store.
+	// Adds or removes the email's ID based on the checkbox state.
 	function toggleSelection() {
 		selectedEmails.update((selected) => {
 			if (isChecked) {
@@ -65,10 +76,10 @@
 
 <div
 	class="email-container"
-	class:seen
+	class:seen={email.seen}
 	role="presentation"
 	draggable={isDraggable}
-	on:dragstart={(e) => {
+	on:dragstart={() => {
 		dispatch('dragstart', email);
 	}}
 	on:dragover={(e) => {
@@ -155,6 +166,10 @@
 		border-bottom: 2px solid var(--page-bgcolor);
 		background-color: white;
 		padding: 0 10px;
+	}
+
+	.seen {
+		background-color: #f2f6fc;
 	}
 
 	.email-container:hover {

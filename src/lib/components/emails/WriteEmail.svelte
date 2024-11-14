@@ -1,16 +1,23 @@
 <script>
+	// This component provides an email composition form with fields for recipient, subject, body, and file attachments.
+	// Drafts are saved automatically if the form is closed when at least one field has been filled by the user
+
 	import { createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 	import { createEmail, addEmail, saveDraft } from '$lib/stores/emailActions.js';
 	import { draftData } from '$lib/stores/draftWrite.js';
-	import { onMount } from 'svelte';
 
 	let receiver = '';
 	let subject = '';
 	let body = '';
 	let sent = false;
-	let attachedFiles = []; // Array to store attached files
+	let attachedFiles = [];
 	let draftId = null;
 
+	let fileInput;
+
+	// when component is rendered it could mean that the user selected to edit a draft email
+	// in this case the draft data will be displayed in the fields
 	onMount(() => {
 		if ($draftData?.id) {
 			draftId = $draftData.id;
@@ -20,8 +27,6 @@
 			attachedFiles = $draftData.attachments || [];
 		}
 	});
-
-	let fileInput;
 
 	const dispatch = createEventDispatcher();
 
@@ -35,6 +40,7 @@
 
 	async function handleCloseForm(event) {
 		event.preventDefault();
+		// if at least one field is not empty, email should be saved as draft
 		if (!sent && (receiver || subject || body || attachedFiles.length > 0)) {
 			await saveDraft(receiver, subject, body, attachedFiles, draftId);
 		}
@@ -96,7 +102,6 @@
 		<input type="text" class="subject-input" placeholder="Oggetto" bind:value={subject} />
 		<textarea class="body-textarea" bind:value={body}></textarea>
 
-		<!-- File attachment preview -->
 		<div class="file-preview">
 			{#if attachedFiles.length > 0}
 				<p>Files attached:</p>
@@ -140,8 +145,6 @@
 </form>
 
 <style>
-	/* Existing styles */
-
 	form {
 		position: absolute;
 		bottom: 0;
@@ -273,7 +276,6 @@
 		font-size: 20px;
 	}
 
-	/* Add file preview styles */
 	.file-preview {
 		margin-top: 10px;
 		font-size: 0.875rem;

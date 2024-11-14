@@ -1,8 +1,10 @@
 <script>
+	// This component represents the header on top of all pages
+
 	import LogoSection from './LogoSection.svelte';
 	import SearchBar from './SearchBar.svelte';
 	import QuickActions from './QuickActions.svelte';
-	import UserAvatar from './UserAvatar.svelte';
+	import UserAvatar from '../reusable/UserAvatar.svelte';
 </script>
 
 <header>

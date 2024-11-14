@@ -1,4 +1,7 @@
+<!-- This component just renders the left most part of the header -->
+
 <div class="logo-section">
+	<!-- svelte-ignore a11y-invalid-attribute -->
 	<a href="#" class="menu-anchor">
 		<span class="material-symbols-outlined"> menu </span>
 	</a>

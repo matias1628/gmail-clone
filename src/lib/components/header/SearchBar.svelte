@@ -1,4 +1,5 @@
 <script>
+	// A searchbar component that can be used to search for specific text in the emails
 	import { searchQuery } from '$lib/stores/searchStore.js';
 
 	let inputText = '';
@@ -9,13 +10,13 @@
 </script>
 
 <div class="search-bar-container">
-	<a href="#" class="search-button">
+	<button class="search-bar-button">
 		<span class="material-symbols-outlined"> search </span>
-	</a>
+	</button>
 	<input type="text" class="search-input" placeholder={inputPlaceholder} bind:value={inputText} />
-	<a href="#" class="filter-options-button">
+	<button class="search-bar-button">
 		<span class="material-symbols-outlined"> tune </span>
-	</a>
+	</button>
 </div>
 
 <style>
@@ -36,16 +37,19 @@
 		flex: 1;
 	}
 
-	a {
+	.search-bar-button {
+		border: none;
+		background: none;
 		border-radius: 50%;
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		text-decoration: none;
 		padding: 0.3rem;
+		cursor: pointer;
 	}
 
-	a:hover {
+	.search-bar-button:hover {
 		background-color: var(--icons-hover-bgcolor);
 	}
 

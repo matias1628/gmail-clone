@@ -1,9 +1,11 @@
 <script>
+	// This component provides a popup with sorting options for emails. It allows the user to sort emails
+	// by "Newest to Oldest" or "Oldest to Newest" by dispatching a custom 'sort' event with the chosen order.
+
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();
 
-	// Emit the chosen sorting option
 	function sortByNewest() {
 		dispatch('sort', { order: 'newest' });
 	}
@@ -33,6 +35,7 @@
 		z-index: 10;
 		min-width: 200px;
 	}
+
 	button {
 		padding: 8px;
 		cursor: pointer;
@@ -41,6 +44,7 @@
 		background: none;
 		width: 100%;
 	}
+
 	button:hover {
 		background-color: #f0f0f0;
 	}
