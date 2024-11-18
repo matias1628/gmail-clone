@@ -242,7 +242,7 @@
 
 	.email-section-header {
 		display: flex;
-		background-color: white;
+		background-color: var(--email-section-bgcolor);
 		padding: 15px 20px;
 	}
 
@@ -276,7 +276,7 @@
 	}
 
 	.icon-button:hover {
-		background-color: #eaebef;
+		background-color: var(--email-section-icon-hover-bgcolor);
 	}
 
 	.icon-button .material-symbols-outlined {
@@ -294,7 +294,7 @@
 	}
 
 	.email-section-footer {
-		background-color: white;
+		background-color: var(--email-section-bgcolor);
 		padding: 20px 0;
 		display: flex;
 		align-items: center;
@@ -303,7 +303,7 @@
 	}
 
 	.email-section-footer span {
-		color: #666666;
+		color: var(--email-section-footer-text);
 		font-size: 12px;
 	}
 

@@ -1,7 +1,8 @@
 <script>
 	import { onMount } from 'svelte';
 	import { createEventDispatcher } from 'svelte';
-	import emailStore from '$lib/stores/emailStore';
+	import emailStore from '$lib/stores/emailStore.js';
+	import emailUsers from '$lib/stores/usersStore.js';
 	import EmailsSection from '../lib/components/emails/EmailsSection.svelte';
 
 	const dispatch = createEventDispatcher();
@@ -13,6 +14,7 @@
 	onMount(async () => {
 		const response = await fetch('https://jsonplaceholder.typicode.com/users');
 		users = response.ok ? await response.json() : [];
+		emailUsers.set(users);
 
 		if (users.length > 0) {
 			const existingData = localStorage.getItem('emailData');
@@ -28,15 +30,14 @@
 							id: crypto.randomUUID(),
 							sender: user.name,
 							subject: 'Welcome!',
-							body: 'This is a sample email in your inbox.',
+							body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
 							date: new Date().toISOString()
 						};
 					}),
 					sent: [],
 					drafts: [],
 					archived: [],
-					favourites: [],
-					postponed: []
+					favourites: []
 				};
 
 				localStorage.setItem('emailData', JSON.stringify(defaultEmails));

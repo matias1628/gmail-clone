@@ -11,11 +11,6 @@
 </div>
 
 <style>
-	:root {
-		--quick-actions-icons-color: #5f6368;
-		--icons-hover-bgcolor: #e8eaed;
-	}
-
 	.quick-actions-container {
 		grid-area: quick-actions;
 		align-self: center;

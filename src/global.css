@@ -14,8 +14,24 @@ body {
 	--email-bgcolor: white;
 	--seen-email-bgcolor: #f2f6fc;
 	--page-bgcolor: #f6f8fc;
+	--email-details-bgcolor: white;
+	--email-section-bgcolor: white;
 	--search-bar-bgcolor: #eaf1fb;
+	--write-email-bgcolor: white;
+	--write-email-header-bgcolor: #f2f6fc;
 	--write-email-btn-bgcolor: #c2e7ff;
+	--send-button-text-color: white;
+	--send-button-bgcolor: #0b57d0;
 	--current-section-bgcolor: #d3e3fd;
 	--quick-actions-icons-color: #5f6368;
+	--email-actions-icons-color: #444746;
+	--email-actions-hover-bgcolor: #e8eaed;
+	--fav-icon-color: rgb(235, 193, 8);
+	--email-main-text-color: #1f1f1f;
+	--email-secondary-text-color: #5e5e5e;
+	--email-body-text-color: #222;
+	--email-section-icon-hover-bgcolor: #eaebef;
+	--email-section-footer-text: #666;
+	--sort-popup-bgcolor: white;
+	--sort-popup-btn-hover-bgcolor: #f0f0f0;
 }

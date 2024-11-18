@@ -87,7 +87,7 @@
 		border-radius: 20px;
 		overflow: hidden;
 		padding: 10px;
-		background-color: white;
+		background-color: var(--email-details-bgcolor);
 		display: flex;
 		flex-direction: column;
 		min-height: 80vh;
@@ -116,7 +116,7 @@
 
 	.go-back-button .material-symbols-outlined {
 		font-size: 1.3rem;
-		color: #444746;
+		color: var(--email-actions-icons-color);
 	}
 
 	.details-body {
@@ -132,7 +132,7 @@
 
 	.email-subject {
 		font-size: 1.375rem;
-		color: #1f1f1f;
+		color: var(--email-main-text-color);
 		font-weight: 400;
 	}
 
@@ -158,7 +158,7 @@
 	}
 
 	.email-sender {
-		color: #1f1f1f;
+		color: var(--email-main-text-color);
 		font-weight: bold;
 		font-size: 0.9rem;
 	}
@@ -166,7 +166,7 @@
 	.email-date,
 	.email-receiver {
 		font-size: 0.8rem;
-		color: #5e5e5e;
+		color: var(--email-secondary-text-color);
 	}
 
 	.email-date {
@@ -181,11 +181,9 @@
 
 	.email-body {
 		max-width: 1000px;
-		color: #222;
+		color: var(--email-body-text-color);
 		direction: ltr;
 		font-size: 1rem;
-		/* font-weight: 300;
-		font-family: Arial, Helvetica, sans-serif; */
 		font:
 			small / 1.5 Arial,
 			Helvetica,

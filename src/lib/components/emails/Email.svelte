@@ -55,7 +55,7 @@
 	// Adds or removes the email's ID based on the checkbox state.
 	function toggleSelection() {
 		selectedEmails.update((selected) => {
-			if (isChecked) {
+			if (!isChecked) {
 				return [...selected, email.id];
 			} else {
 				return selected.filter((id) => id != email.id);
@@ -127,12 +127,12 @@
 	</div>
 	<div class="email-mid-section">
 		<span class="subject">{email.subject}</span> -
-		<span class="body">{email.body}</span>
+		<span class="email-body">{email.body}</span>
 	</div>
 	<div class="email-right-section">
 		{#if isHovered}
 			<div class="email-actions-container">
-				<button class="email-action-button" aria-label="Archive email">
+				<button disabled class="email-action-button" aria-label="Archive email">
 					<span class="material-symbols-outlined"> archive </span>
 				</button>
 				<button
@@ -142,10 +142,10 @@
 				>
 					<span class="material-symbols-outlined"> delete </span>
 				</button>
-				<button class="email-action-button" aria-label="Mark email as unread">
+				<button disabled class="email-action-button" aria-label="Mark email as unread">
 					<span class="material-symbols-outlined"> mark_email_unread </span>
 				</button>
-				<button class="email-action-button" aria-label="Schedule email">
+				<button disabled class="email-action-button" aria-label="Schedule email">
 					<span class="material-symbols-outlined"> schedule </span>
 				</button>
 			</div>
@@ -169,7 +169,7 @@
 	}
 
 	.seen {
-		background-color: #f2f6fc;
+		background-color: var(--seen-email-bgcolor);
 	}
 
 	.email-container:hover {
@@ -223,12 +223,12 @@
 
 	.favourite-icon:hover {
 		font-variation-settings: 'FILL' 1;
-		color: rgb(235, 193, 8);
+		color: var(--fav-icon-color);
 	}
 
 	.fill-icon {
 		font-variation-settings: 'FILL' 1;
-		color: rgb(235, 193, 8);
+		color: var(--fav-icon-color);
 	}
 
 	.email-mid-section {
@@ -267,21 +267,21 @@
 	}
 
 	.email-action-button:hover {
-		background-color: #e8eaed;
+		background-color: var(--email-actions-hover-bgcolor);
 	}
 
 	.email-action-button .material-symbols-outlined {
 		font-size: 1.3rem;
-		color: #444746;
+		color: var(--email-actions-icons-color);
 	}
 
 	.sender,
 	.subject,
-	.body {
+	.email-body {
 		font-size: 0.875rem;
 	}
 
-	.body {
+	.email-body {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -294,7 +294,11 @@
 		font-weight: 700;
 	}
 
-	.body {
+	.sender {
+		margin-left: 5px;
+	}
+
+	.email-body {
 		color: #5f6368;
 	}
 

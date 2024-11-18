@@ -4,7 +4,7 @@
 
 	import { createEventDispatcher } from 'svelte';
 	import { onMount } from 'svelte';
-	import { createEmail, addEmail, saveDraft } from '$lib/stores/emailActions.js';
+	import { createEmail, addEmail, saveDraft, deleteEmail } from '$lib/stores/emailActions.js';
 	import { draftData } from '$lib/stores/draftWrite.js';
 
 	let receiver = '';
@@ -56,7 +56,12 @@
 		addEmail(newEmail);
 
 		sent = true;
-		handleCloseForm();
+
+		if ($draftData) {
+			deleteEmail(draftId, 'drafts');
+		}
+
+		await handleCloseForm(event);
 	}
 
 	// Handle file selection via input
@@ -86,10 +91,10 @@
 	<div class="form-header">
 		<span class="form-header-title">Nuovo messaggio</span>
 		<div class="form-window-actions">
-			<button class="window-action-button">
+			<button class="window-action-button" disabled>
 				<span class="material-symbols-outlined"> remove </span>
 			</button>
-			<button class="window-action-button">
+			<button class="window-action-button" disabled>
 				<span class="material-symbols-outlined"> open_in_full </span>
 			</button>
 			<button class="window-action-button" type="button" on:click={handleCloseForm}>
@@ -125,13 +130,14 @@
 		<div class="form-footer">
 			<button class="send-button" type="submit">Invia</button>
 			<div class="email-actions">
-				<div class="action-container">
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<!-- svelte-ignore a11y-no-static-element-interactions -->
-					<span class="material-symbols-outlined action-icon" on:click={() => fileInput.click()}
-						>attach_file</span
-					>
-				</div>
+				<button
+					class="action-container"
+					type="button"
+					on:click={() => fileInput.click()}
+					aria-label="Attach files"
+				>
+					<span class="material-symbols-outlined action-icon">attach_file</span>
+				</button>
 				<input
 					type="file"
 					multiple
@@ -151,7 +157,7 @@
 		right: 120px;
 		width: 500px;
 		height: 550px;
-		background-color: white;
+		background-color: var(--write-email-bgcolor);
 		display: flex;
 		flex-direction: column;
 		z-index: 100;
@@ -168,7 +174,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 10px 16px;
-		background-color: #f2f6fc;
+		background-color: var(--write-email-header-bgcolor);
 	}
 
 	.form-header-title {
@@ -242,10 +248,9 @@
 	}
 
 	.send-button {
-		background-color: #0b57d0;
-		color: white;
+		background-color: var(--send-button-bgcolor);
+		color: var(--send-button-text-color);
 		border: none;
-		background-color: #0b57d0;
 		cursor: pointer;
 		border-radius: 18px;
 		padding: 10px 25px;
@@ -264,6 +269,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		border: none;
+		background: none;
 	}
 
 	.action-container:hover {

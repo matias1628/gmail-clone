@@ -1,4 +1,5 @@
 import emailStore from './emailStore';
+import emailUsers from './usersStore';
 import { get } from 'svelte/store';
 
 // Helper function to read a file as base64 encoded data
@@ -19,11 +20,26 @@ export function updateEmailStore(updatedEmails) {
 // Creates a new email object with default properties
 export async function createEmail(receiver, subject = 'No Subject', body = '', attachments = []) {
 	const currentDate = new Date().toISOString();
-	const base64Attachments = await Promise.all(attachments.map((file) => readFileAsBase64(file)));
+
+	const users = get(emailUsers);
+	const getRandomUser = () => users[Math.floor(Math.random() * users.length)];
+	const randomSender = users.length > 0 ? getRandomUser().name : 'Default Sender';
+
+	// Ensure attachments are base64 encoded if they aren't already
+	const base64Attachments = await Promise.all(
+		attachments.map(async (file) => {
+			// Skip the conversion if the file already has base64 content
+			if (file.content && file.name && file.type) {
+				return file; // Already base64-encoded
+			} else {
+				return await readFileAsBase64(file); // Convert to base64
+			}
+		})
+	);
 
 	return {
 		id: crypto.randomUUID(),
-		sender: 'default Sender',
+		sender: randomSender,
 		receiver,
 		subject,
 		body,
@@ -83,8 +99,10 @@ export async function saveDraft(receiver, subject, body, attachments, existingDr
 	const base64Attachments = await Promise.all(
 		attachments.map(async (file) => {
 			if (file.content && file.name && file.type) {
+				// Already base64-encoded, so return as is
 				return file;
 			} else {
+				// New file: convert to Base64
 				return await readFileAsBase64(file);
 			}
 		})

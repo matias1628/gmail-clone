@@ -26,7 +26,7 @@
 		top: 100%;
 		left: 100%;
 		transform: translateY(-50%);
-		background-color: white;
+		background-color: var(--sort-popup-bgcolor);
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 		border-radius: 8px;
 		padding: 8px;
@@ -46,6 +46,6 @@
 	}
 
 	button:hover {
-		background-color: #f0f0f0;
+		background-color: var(--sort-popup-btn-hover-bgcolor);
 	}
 </style>
